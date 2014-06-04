@@ -84,7 +84,38 @@ if $::puppet_run_mode != 'agent' {
 
   # set up our hiera-store!
   file { "${settings::confdir}/hiera.yaml":
-    content => template('hiera.erb'),
+    content =>
+'
+---
+:backends:
+  - data_mapper
+:hierarchy:
+  - "hostname/%{hostname}"
+  - "client/%{clientcert}"
+  - user
+  - jenkins
+  - user.%{scenario}
+  - user.common
+  - "osfamily/%{osfamily}"
+  - "enable_ha/%{enable_ha}"
+  - "install_tempest/%{install_tempest}"
+  - "cinder_backend/%{cinder_backend}"
+  - "glance_backend/%{glance_backend}"
+  - "rpc_type/%{rpc_type}"
+  - "db_type/%{db_type}"
+  - "tenant_network_type/%{tenant_network_type}"
+  - "network_type/%{network_type}"
+  - "network_plugin/%{network_plugin}"
+  - "password_management/%{password_management}"
+  - "scenario/%{scenario}"
+  - common
+:yaml:
+   :datadir: /etc/puppet/data/hiera_data
+:data_mapper:
+   # this should be contained in a module
+   :datadir: /etc/puppet/data/data_mappings
+'
+    ,
   }
 
   # add the correct node terminus
