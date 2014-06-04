@@ -1,8 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
 require 'yaml'
 require 'fileutils'
+
+def localdir
+  File.expand_path(File.join(File.dirname(__FILE__)))
+end
 
 # Four networks:
 # 0 - VM host NAT
@@ -11,7 +16,7 @@ require 'fileutils'
 # 3 - COE openstack external (public)
 
 def parse_vagrant_config(
-  config_file=File.expand_path(File.join(File.dirname(__FILE__), 'data', 'config.yaml'))
+  config_file=File.join(localdir, 'data', 'config.yaml')
 )
   config = {
     'gui_mode'        => false,
@@ -87,7 +92,7 @@ end
 #   * eth1 => 192.168.242.0/24
 #     this is the network that the openstack services use to communicate with each other
 #   * eth2 => 10.2.3.0/24
-#   * eth3 => 10.2.3.0/24
+#   * eth3 => 10.3.3.0/24
 #
 # == Parameters
 #   config - vm config object
@@ -95,21 +100,23 @@ end
 #   options - additional options
 #     eth1_mac - mac address to set for eth1 (used for PXE booting)
 #
-def setup_networks(config, number, options = {})
-  config.vm.network :hostonly, "192.168.242.#{number}", :mac => options[:eth1_mac]
-  config.vm.network :hostonly, "10.2.3.#{number}"
-  config.vm.network :hostonly, "10.3.3.#{number}"
+
+def setup_networks(config, number, network='10')
+  config.vm.network "private_network", :ip => "192.168.242.#{number}"
+  config.vm.network "private_network", :ip => "#{network}.2.3.#{number}"
+  config.vm.network "private_network", :ip => "#{network}.3.3.#{number}"
   # set eth3 in promiscuos mode
-  config.vm.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+  config.vm.provider "virtualbox" do |vconfig|
+    vconfig.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
   # set the boot priority to use eth1
-  config.vm.customize(['modifyvm', :id ,'--nicbootprio2','1'])
+    vconfig.customize(['modifyvm', :id ,'--nicbootprio2','1'])
+  end
 end
 
 #
 # setup the hostname of our box
 #
 def setup_hostname(config, hostname)
-  config.vm.customize ['modifyvm', :id, '--name', hostname]
   config.vm.host_name = hostname
 end
 
@@ -136,13 +143,13 @@ def apply_manifest(config, v_config, manifest_name='site.pp', certname=nil, pupp
 
   # ensure that when puppet applies the site manifest, it has hiera configured
   if manifest_name == 'site.pp'
-    config.vm.share_folder("data", '/etc/puppet/data', './data')
+    config.vm.synced_folder("data/", '/etc/puppet/data')
   end
-  config.vm.share_folder("ssh", '/root/.ssh', './dot-ssh')
+  config.vm.synced_folder("dot-ssh/", '/root/.ssh')
 
   # Explicitly mount the shared folders, so we dont break with newer versions of vagrant
-  config.vm.share_folder("modules", '/etc/puppet/modules', './modules/')
-  config.vm.share_folder("manifests", '/etc/puppet/manifests', './manifests/')
+  config.vm.synced_folder("modules/", '/etc/puppet/modules')
+  config.vm.synced_folder("manifests/", '/etc/puppet/manifests')
 
   config.vm.provision :shell do |shell|
     script =
@@ -154,7 +161,7 @@ def apply_manifest(config, v_config, manifest_name='site.pp', certname=nil, pupp
     shell.inline = script
   end
 
-  config.vm.provision(:puppet, :pp_path => "/etc/puppet") do |puppet|
+  config.vm.provision(:puppet) do |puppet|
     puppet.manifests_path = 'manifests'
     puppet.manifest_file  = manifest_name
     puppet.module_path    = 'modules'
@@ -226,7 +233,10 @@ def configure_openstack_node(
   cert_name = node_name
   get_box(config, box_name)
   setup_hostname(config, node_name)
-  config.vm.customize ["modifyvm", :id, "--memory", memory]
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = memory
+  end
   setup_networks(config, net_id)
   if v_config['operatingsystem'] == 'ubuntu' and apt_cache_proxy
     configure_apt_mirror(config, v_config['apt_mirror'], apt_cache_proxy)
@@ -252,8 +262,14 @@ def configure_openstack_node(
 
 end
 
-Vagrant::Config.run do |config|
+Vagrant.configure("2") do |config|
 
   process_nodes(config)
 
+end
+
+# load other vendor specific Vagrantfiles
+path = File.join(localdir, 'builder_overrides', 'Vagrantfile')
+if File.exists?(path)
+  eval(File.read(path))
 end
