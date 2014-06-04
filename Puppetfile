@@ -2,60 +2,22 @@
 #
 # this file also accepts a few environment variables
 #
+
+# let people override to use https
 git_protocol=ENV['git_protocol'] || 'git'
-openstack_version=ENV['openstack_version'] || 'icehouse'
+# make selection of version configurable
+# it defaults to nil (which will use master)
+openstack_version=ENV['openstack_version']
 
-#
-# this modulefile has been configured to use two sets of repos.
-# The downstream repos that Cisco has forked, or the upstream repos
-# that they are derived from (and should be maintained in sync with)
-#
-
-#
-# this is just targeting the upstream stackforge modules
-# right now, and the logic for using downstream does not
-# work yet
-#
-
-unless ['grizzly', 'havana', 'icehouse'].include?(openstack_version)
-  abort("Only grizzly, havana, and icehouse are currently supported")
+unless ['havana', 'icehouse', nil].include?(openstack_version)
+  abort("Only havana, and icehouse are currently supported")
 end
 
-if openstack_version == 'grizzly'
-  neutron_name = 'quantum'
-else
-  neutron_name = 'neutron'
-end
+openstack_module_branch = openstack_version ? "stable/#{openstack_version}" : 'master'
 
-if ENV['repos_to_use']  == 'downstream'
-  # this assumes downstream which is the Cisco branches
-  branch_name               = "#{openstack_version}"
-  cisco_branch_name         = branch_name
-  openstack_module_branch   = branch_name
-  openstack_module_account  = 'CiscoSystems'
-  puppetlabs_module_prefix = 'CiscoSystems/puppet-'
-  apache_branch   = branch_name
-  mysql_branch    = branch_name
-  rabbitmq_branch = branch_name
-else
-  if openstack_version == 'grizzly'
-    openstack_module_branch   = 'stable/grizzly'
-  elsif openstack_version == 'havana'
-    openstack_module_branch   = 'stable/havana'
-  elsif openstack_version == 'icehouse'
-    openstack_module_branch   = 'stable/icehouse'
-  else
-    abort('only grizzly, havana, and icehouse are supported')
-  end
-  # use the upstream modules where they exist
-  branch_name               = 'master'
-  cisco_branch_name         = "#{openstack_version}"
-  openstack_module_account  = 'stackforge'
-  puppetlabs_module_prefix  = 'puppetlabs/puppetlabs-'
-  apache_branch   = '0.x'
-  mysql_branch    = '2.2.x'
-  rabbitmq_branch = '2.x'
-end
+branch_name     = 'master'
+mysql_branch    = '2.2.x'
+rabbitmq_branch = '2.x'
 
 base_url = "#{git_protocol}://github.com"
 
@@ -66,9 +28,6 @@ base_url = "#{git_protocol}://github.com"
 
 mod 'bodepd/scenario_node_terminus',
   :git => 'https://github.com/bodepd/scenario_node_terminus'
-mod 'CiscoSystems/coi',
-  :git => "#{base_url}/CiscoSystems/puppet-coi",
-  :ref => cisco_branch_name
 mod 'puppetlabs/postgresql',
   :git => "#{base_url}/puppetlabs/puppetlabs-postgresql",
   :ref => '2.5.0'
@@ -92,112 +51,74 @@ mod 'stephenjohrnson/puppet',
 
 ###### stackforge openstack modules #####
 
-openstack_repo_prefix = "#{base_url}/#{openstack_module_account}/puppet-"
-
 [
-  'openstack',
   'cinder',
   'glance',
   'keystone',
   'horizon',
   'nova',
-  neutron_name,
+  'neutron',
   'swift',
   'tempest',
   'heat',
-].each do |module_name|
-  mod "stackforge/#{module_name}",
-    :git => "#{openstack_repo_prefix}#{module_name}",
-    :ref => openstack_module_branch
-end
-
-# stackforge module with no grizzly release
-[
   'ceilometer',
   'vswitch'
 ].each do |module_name|
   mod "stackforge/#{module_name}",
-    :git => "#{openstack_repo_prefix}#{module_name}",
-    :ref => 'master'
+    :git => "#{base_url}/stackforge/puppet-#{module_name}",
+    :ref => openstack_module_branch
 end
 
 ##### Puppet Labs modules #####
 
-
-# this module needs to be alighed with upstream
-mod 'puppetlabs/apt',
-  :git => "#{base_url}/CiscoSystems/puppet-apt",
-  :ref => cisco_branch_name
-
 [
+  'apt',
   'stdlib',
   'xinetd',
   'ntp',
   'rsync',
-  'inifile'
-#  'mongodb'
+  'inifile',
+  'mongodb',
+  'mysql',
+  'rabbitmq',
+  'apache'
 ].each do |module_name|
+  begin
+    ref = eval("#{module_name}_branch")
+  rescue NameError
+    ref = 'master'
+  end
   mod "puppetlabs/#{module_name}",
-    :git => "#{base_url}/#{puppetlabs_module_prefix}#{module_name}",
-    :ref => branch_name
-end
-
-## PuppetLabs modules that are too unstable to use master ##
-{
-  'mysql'    => mysql_branch,
-  'rabbitmq' => rabbitmq_branch,
-  'apache'   => apache_branch
-}.each do |module_name, ref|
-  mod "puppetlabs/#{module_name}",
-    :git => "#{base_url}/#{puppetlabs_module_prefix}#{module_name}",
+    :git => "#{base_url}/puppetlabs/puppetlabs-#{module_name}",
     :ref => ref
 end
 
 ##### modules with other upstreams #####
 
 mod 'saz/memcached',
-  :git => "#{base_url}/CiscoSystems/puppet-memcached",
-  :ref => cisco_branch_name
+  :git => "#{base_url}/saz/puppet-memcached",
+  :ref => 'master'
 mod 'saz/ssh',
   :git => "#{base_url}/bodepd/puppet-ssh",
   :ref => 'master'
 mod 'duritong/sysctl',
-  :git => "#{base_url}/CiscoSystems/puppet-sysctl",
-  :ref => cisco_branch_name
+  :git => "#{base_url}/duritong/puppet-sysctl",
+  :ref => 'master'
 
-##### Modules without upstreams #####
-
-cisco_module_prefix = "#{base_url}/CiscoSystems/puppet-"
+##### Modules that come from Cisco #####
 
 [
-  'cephdeploy',
-  'coe',
-  'cobbler',
-  'concat',
-  'apt-cacher-ng',
-  'collectd',
-  'graphite',
-  'pip',
-  'dnsmasq',
+  'coi',
+  'coe'
 ].each do |module_name|
   mod "CiscoSystems/#{module_name}",
-    :git => "#{cisco_module_prefix}#{module_name}",
-    :ref => cisco_branch_name
+    :git => "#{base_url}/CiscoSystems/puppet-#{module_name}",
+    :ref => 'master'
 end
 
-#### HA Modules ###
-
-[
-  'augeas',
-  'filemapper',
-  'galera',
-  'haproxy',
-  'keepalived',
-  'network',
-  'openstack-ha',
-  'boolean'
-].each do |module_name|
-  mod "CiscoSystems/#{module_name}",
-    :git => "#{cisco_module_prefix}#{module_name}",
-    :ref => cisco_branch_name
+# load a Puppetfile that can override things
+localdir = File.expand_path(File.join(File.dirname(__FILE__)))
+path     = File.join(localdir, 'builder_overrides', 'Puppetfile')
+if File.exists?(path)
+  eval(File.read(path))
 end
