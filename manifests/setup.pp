@@ -12,10 +12,8 @@
 # that Puppet will be installed on the bare-metal nodes
 # with the correct version
 
-# do we use vendor-supplied puppet, or puppetlabs?
-if $vendorpuppet != 'vendor' {
-  include puppet::repo::puppetlabs
-}
+Apt::Source<||> -> Package<||>
+include puppet::repo::puppetlabs
 
 case $::osfamily {
   'Redhat': {
