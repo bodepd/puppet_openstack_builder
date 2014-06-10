@@ -18,21 +18,21 @@ include puppet::repo::puppetlabs
 case $::osfamily {
   'Redhat': {
       if $vendorpuppet == 'vendor' {
-          $puppet_version = 'latest'
+        $puppet_version = 'latest'
       }
       else {
-          $puppet_version = '3.2.3-1.el6'
+        $puppet_version = '3.5.1-1puppetlabs1'
       }
-    $pkg_list       = ['git', 'curl', 'httpd']
+    $pkg_list       = ['git', 'curl', 'httpd' ]
   }
   'Debian': {
       if $vendorpuppet == 'vendor' {
           $puppet_version = 'latest'
       }
       else {
-          $puppet_version = '3.2.3-1puppetlabs1'
+          $puppet_version = '3.5.1-1puppetlabs1'
       }
-    $pkg_list       = ['git', 'curl', 'vim', 'cobbler']
+    $pkg_list       = ['git', 'curl', 'vim', 'rubygems']
     package { 'puppet-common':
       ensure => $puppet_version,
     }
@@ -48,9 +48,11 @@ package { 'puppet':
 
 # dns resolution should be setup correctly
 if $::build_server_ip {
-  host { "${::hostname}.${::build_server_domain_name}":
+  host { "build-server.${::build_server_domain_name}":
     ip           => $::build_server_ip,
-    host_aliases => $::hostname
+  }
+  host { "${::hostname}.${::build_server_domain_name}":
+    ip           => "${::ipaddress_eth1}",
   }
 }
 
