@@ -17,9 +17,7 @@ enabled_services:
   - cinder
   - keystone
   - nova
-  # 'neutron', 'quantum', or "%{network_service} to use
-  # the value configured in global_hiera_params/common.yaml
-  - "%{network_service}"
+  - neutron
   - swift
   # NOTE: if using mongodb, comment this line out so mysql is not
   # redundantly included
@@ -239,3 +237,5 @@ rabbitmq::server::wipe_db_on_cookie_change: true
 # Default character set and collation order for MySQL
 mysql_default_charset: utf8
 mysql_default_collation: utf8_unicode_ci
+
+neutron::plugins::ml2::enable_security_group: true

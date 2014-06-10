@@ -350,9 +350,7 @@ enable_vpnaas: true
 
 # An array of Neutron service plugins to enable.
 service_plugins:
-  - 'neutron.services.loadbalancer.plugin.LoadBalancerPlugin'
-  - 'neutron.services.firewall.fwaas_plugin.FirewallPlugin'
-  - 'neutron.services.vpn.plugin.VPNDriverPlugin'
+  - router
 
 # Set the interface driver
 interface_driver: 'neutron.agent.linux.interface.OVSInterfaceDriver'

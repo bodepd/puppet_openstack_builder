@@ -4,9 +4,7 @@
 #
 secret_key:
   - horizon::secret_key
-  - quantum::agents::metadata::shared_secret
   - neutron::agents::metadata::shared_secret
-  - nova::api::quantum_metadata_proxy_shared_secret
   - nova::api::neutron_metadata_proxy_shared_secret
   # TODO this should place the data right into the underlying class
   - openstack::swift::proxy::swift_hash_suffix
@@ -18,8 +16,6 @@ password:
   - nova::rabbitmq::password
   - nova::rabbit_password
   - nova::qpid_password
-  - quantum::rabbit_password
-  - quantum::qpid_password
   - neutron::rabbit_password
   - neutron::qpid_password
   - glance::notify::rabbitmq::rabbit_password
@@ -33,8 +29,6 @@ password:
   - keystone::db::postgresql::password
   - nova::db::mysql::password
   - nova::db::postgresql::password
-  - quantum::db::mysql::password
-  - quantum::db::postgresql::password
   - neutron::db::mysql::password
   - neutron::db::postgresql::password
   - mysql::config::root_password
@@ -51,14 +45,10 @@ password:
   - nova::api::admin_password
   - keystone::admin_token
   - keystone::roles::admin::password
-  - quantum::keystone::auth::password
   - neutron::keystone::auth::password
-  - quantum::server::auth_password
   - neutron::server::auth_password
   - neutron::server::notifications::nova_admin_password
-  - nova::network::quantum::quantum_admin_password
   - nova::network::neutron::neutron_admin_password
-  - quantum::agents::metadata::auth_password
   - neutron::agents::metadata::auth_password
   - openstack_extras::auth_file::admin_password
   - ceilometer::keystone::auth::password

@@ -3,7 +3,8 @@ classes:
   - nova::compute
   - nova::config
   - "nova::compute::%{compute_type}"
-  - "nova::network::%{network_service}"
-  - "nova::compute::%{network_service}"
-  - "%{network_service}"
-  - "%{network_service}::agents::%{network_plugin}"
+  - "nova::network::neutron"
+  - "nova::compute::neutron"
+  - neutron
+  - neutron::plugins::ml2
+  - "neutron::agents::ml2::%{network_plugin}"

@@ -1,13 +1,13 @@
 classes:
-  - "%{network_service}"
-  - "%{network_service}::server"
-  - "%{network_service}::server::notifications"
-  - "%{network_service}::config"
-  - "%{network_service}::agents::metadata"
-  - "%{network_service}::agents::l3"
-  - "%{network_service}::agents::lbaas"
-  - "%{network_service}::agents::vpnaas"
-  - "%{network_service}::agents::dhcp"
-  - "%{network_service}::agents::%{network_plugin}"
-  - "%{network_service}::services::fwaas"
-  - "%{network_service}::plugins::%{network_plugin}"
+  - neutron
+  - neutron::server
+  - neutron::server::notifications
+  - neutron::config
+  - neutron::agents::metadata
+  - neutron::agents::l3
+  - neutron::agents::lbaas
+  - neutron::agents::vpnaas
+  - neutron::agents::dhcp
+  - neutron::plugins::ml2
+  - "neutron::agents::ml2::%{network_plugin}"
+  - neutron::services::fwaas

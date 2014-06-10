@@ -14,8 +14,6 @@ nova_db_password:
   - nova::db::mysql::password
   - nova::db::postgresql::password
 network_db_password:
-  - quantum::db::mysql::password
-  - quantum::db::postgresql::password
   - neutron::db::mysql::password
   - neutron::db::postgresql::password
 database_root_password:
@@ -39,13 +37,9 @@ admin_password:
   - keystone::roles::admin::password
   - openstack_extras::auth_file::admin_password
 network_service_password:
-  - quantum::keystone::auth::password
   - neutron::keystone::auth::password
-  - quantum::server::auth_password
   - neutron::server::auth_password
-  - nova::network::quantum::quantum_admin_password
   - nova::network::neutron::neutron_admin_password
-  - quantum::agents::metadata::auth_password
   - neutron::agents::metadata::auth_password
 swift_service_password:
   - swift::keystone::auth::password
@@ -61,17 +55,13 @@ rpc_password:
   - nova::rabbitmq::password
   - nova::rabbit_password
   - nova::qpid_password
-  - quantum::rabbit_password
-  - quantum::qpid_password
   - neutron::rabbit_password
   - neutron::qpid_password
   - ceilometer::rabbit_password
   - ceilometer::qpid_password
   - heat::rabbit_password
 metadata_shared_secret:
-  - quantum::agents::metadata::shared_secret
   - neutron::agents::metadata::shared_secret
-  - nova::api::quantum_metadata_proxy_shared_secret
   - nova::api::neutron_metadata_proxy_shared_secret
 horizon_secret_key:
   - horizon::secret_key

@@ -4,11 +4,8 @@ debug:
   - glance::registry::debug
   - horizon::django_debug
   - keystone::debug
-  - quantum::debug
   - neutron::debug
   - neutron::agents::lbaas::debug
-  - quatum::agents::dhcp::debug
-  - quatum::agents::metadata::debug
   - ceilometer::debug
   - heat::debug
   - nova::debug
@@ -17,7 +14,6 @@ verbose:
   - glance::api::verbose
   - glance::registry::verbose
   - keystone::verbose
-  - quantum::verbose
   - neutron::verbose
   - ceilometer::verbose
   - heat::verbose
@@ -44,9 +40,7 @@ rpc_user:
   - nova::rabbitmq::userid
   - nova::rabbit_userid
   - nova::qpid_username
-  - quantum::rabbit_user
   - neutron::rabbit_user
-  - quantum::qpid_username
   - neutron::qpid_username
   - ceilometer::rabbit_userid
   - ceilometer::qpid_username
@@ -78,7 +72,6 @@ allowed_hosts:
   - glance::db::mysql::allowed_hosts
   - keystone::db::mysql::allowed_hosts
   - nova::db::mysql::allowed_hosts
-  - quantum::db::mysql::allowed_hosts
   - neutron::db::mysql::allowed_hosts
   - heat::db::mysql::allowed_hosts
 #
@@ -95,8 +88,6 @@ controller_internal_address:
   - nova::qpid_hostname
   - heat::qpid_hostname
   - heat::rabbit_host
-  - quantum::rabbit_host
-  - quantum::qpid_hostname
   - neutron::qpid_hostname
   - neutron::rabbit_host
   - ceilometer::db::mysql::host
@@ -106,7 +97,6 @@ controller_internal_address:
   - glance::db::mysql::host
   - keystone::db::mysql::host
   - nova::db::mysql::host
-  - quantum::db::mysql::host
   - neutron::db::mysql::host
   # internal endpoint addresses are the same as this
   - cinder::keystone::auth::internal_address
@@ -118,15 +108,12 @@ controller_internal_address:
   - glance::api::auth_host
   - glance::registry::auth_host
   - nova::api::auth_host
-  - quantum::server::auth_host
   - neutron::server::auth_host
-  - quantum::keystone::auth::internal_address
   - neutron::keystone::auth::internal_address
   - openstack::auth_file::controller_node
   - postgresql::config::listen_addresses
   # deprecated past 0.x
   - mysql::config::bind_address
-  - quantum::agents::metadata::metadata_ip
   - neutron::agents::metadata::metadata_ip
   - openstack::swift::proxy::keystone_host
   - swift::keystone::auth::internal_address
@@ -142,7 +129,6 @@ controller_public_address:
   - nova::keystone::auth::public_address
   - heat::keystone::auth::public_address
   - heat::keystone::auth_cfn::public_address
-  - quantum::keystone::auth::public_address
   - neutron::keystone::auth::public_address
   - swift::keystone::auth::public_address
   - ceilometer::keystone::auth::public_address
@@ -162,7 +148,6 @@ controller_admin_address:
   - nova::keystone::auth::admin_address
   - heat::keystone::auth::admin_address
   - heat::keystone::auth_cfn::admin_address
-  - quantum::keystone::auth::admin_address
   - neutron::keystone::auth::admin_address
   - swift::keystone::auth::admin_address
   - ceilometer::keystone::auth::admin_address
@@ -195,8 +180,6 @@ swift_local_net_ip:
 "%{db_type}://nova:%{nova_db_password}@%{controller_internal_address}/nova":
   - nova::database_connection
 "%{db_type}://%{network_service}:%{network_db_password}@%{controller_internal_address}/%{network_service}":
-  - quantum::plugins::ovs::sql_connection
-  - quantum::plugins::linuxbridge::sql_connection
   - neutron::server::database_connection
 "%{ceilometer_db_type}://ceilometer:%{ceilometer_db_password}@%{controller_internal_address}/ceilometer":
 # NOTE: Workaround for connection issues with mongo
@@ -205,12 +188,9 @@ swift_local_net_ip:
 "%{db_type}://heat:%{heat_db_password}@%{controller_internal_address}/heat":
   - heat::sql_connection
 "http://%{controller_internal_address}:9696":
-  - nova::network::quantum::quantum_url
   - nova::network::neutron::neutron_url
 "http://%{controller_internal_address}:35357/v2.0":
-  - nova::network::quantum::quantum_admin_auth_url
   - nova::network::neutron::neutron_admin_auth_url
-  - quantum::agents::metadata::auth_url
   - neutron::agents::metadata::auth_url
   - ceilometer::agent::compute::auth_url
   - ceilometer::agent::auth::auth_url
@@ -310,13 +290,10 @@ region:
   - cinder::keystone::auth::region
   - glance::keystone::auth::region
   - nova::keystone::auth::region
-  - quantum::keystone::auth::region
   - neutron::keystone::auth::region
   - neutron::server::notifications::nova_region_name
   - keystone::endpoint::region
-  - nova::network::quantumclient::quantum_region_name
   - nova::network::neutronclient::neutron_region_name
-  - quantum::agents::metadata::auth_region
   - neutron::agents::metadata::auth_region
   - ceilometer::keystone::auth::region
   - ceilometer::agent::auth::auth_region

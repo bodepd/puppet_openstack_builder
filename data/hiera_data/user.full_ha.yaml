@@ -133,7 +133,6 @@ cinder_backend: rbd
 
 # full_ha uses the OpenStack provider networking model. In this model,
 # network_vlan_ranges specifies the VLAN tag range being provided to OVS.
-quantum::plugins::ovs::network_vlan_ranges: physnet1:223:225
 neutron::plugins::ovs::network_vlan_ranges: physnet1:223:225
 
 # storage_type specifies what type of storage is being used on the Swift
