@@ -1,7 +1,8 @@
-# the account where the Openstack modules should come from
 #
-# this file also accepts a few environment variables
+# This base Puppetfile can be used to download
+# the base deps for simple openstack deployments.
 #
+
 
 # let people override to use https
 git_protocol=ENV['git_protocol'] || 'git'
@@ -62,10 +63,20 @@ mod 'stephenjohrnson/puppet',
   'tempest',
   'heat',
   'ceilometer',
-  'vswitch'
+  'vswitch',
 ].each do |module_name|
   mod "stackforge/#{module_name}",
     :git => "#{base_url}/stackforge/puppet-#{module_name}",
+    :ref => openstack_module_branch
+end
+
+# things that I am temporarily hosting
+[
+  'openstacklib',
+  'openstack_extras'
+].each do |module_name|
+  mod "stackforge/#{module_name}",
+    :git => "#{base_url}/bodepd/puppet-#{module_name}",
     :ref => openstack_module_branch
 end
 
@@ -104,17 +115,6 @@ mod 'saz/ssh',
 mod 'duritong/sysctl',
   :git => "#{base_url}/duritong/puppet-sysctl",
   :ref => 'master'
-
-##### Modules that come from Cisco #####
-
-[
-  'coi',
-  'coe'
-].each do |module_name|
-  mod "CiscoSystems/#{module_name}",
-    :git => "#{base_url}/CiscoSystems/puppet-#{module_name}",
-    :ref => 'master'
-end
 
 # load a Puppetfile that can override things
 localdir = File.expand_path(File.join(File.dirname(__FILE__)))
