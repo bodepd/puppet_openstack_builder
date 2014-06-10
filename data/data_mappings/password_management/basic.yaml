@@ -60,7 +60,7 @@ password:
   - nova::network::neutron::neutron_admin_password
   - quantum::agents::metadata::auth_password
   - neutron::agents::metadata::auth_password
-  - openstack::auth_file::admin_password
+  - openstack_extras::auth_file::admin_password
   - ceilometer::keystone::auth::password
   - ceilometer::api::keystone_password
   - ceilometer::db::mysql::password

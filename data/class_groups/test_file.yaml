@@ -3,6 +3,6 @@
 # deploy the simple test script
 #
 classes:
-  - openstack::client
-  - openstack::auth_file
-  - openstack::test_file
+  - openstack_extras::client
+  - openstack_extras::auth_file
+  - openstack_extras::test_file

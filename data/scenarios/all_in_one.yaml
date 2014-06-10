@@ -4,7 +4,7 @@
 roles:
   all_in_one:
     classes:
-      - coe::base
+      - openstack_extras::repo
       - cinder::setup_test_volume
       - openstack::swift::proxy
       - openstack::swift::storage-node
@@ -26,7 +26,7 @@ roles:
       - test_file
   compute:
     classes:
-      - coe::base
+      - openstack_extras::repo
       - cinder::setup_test_volume
     class_groups:
       - nova_compute

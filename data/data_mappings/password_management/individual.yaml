@@ -37,7 +37,7 @@ admin_token:
   - keystone::admin_token
 admin_password:
   - keystone::roles::admin::password
-  - openstack::auth_file::admin_password
+  - openstack_extras::auth_file::admin_password
 network_service_password:
   - quantum::keystone::auth::password
   - neutron::keystone::auth::password

@@ -69,8 +69,8 @@ rpc_password:
   - nova::rabbitmq::password
 
 enabled_services:
-  - coi::profiles::openstack::endpoints::enabled_services
-  - coi::profiles::openstack::databases::mysql::enabled_services
+  - openstack_extras::keystone_endpoints::enabled_services
+  - openstack_extras::databases::enabled_services
 
 allowed_hosts:
   - ceilometer::db::mysql::allowed_hosts
@@ -133,7 +133,6 @@ controller_internal_address:
   - ceilometer::keystone::auth::internal_address
   - ceilometer::api::keystone_host
   - heat::keystone_host
-  - coe::base::controller_node_internal
   - heat::db::mysql::host
 controller_public_address:
   - nova::vncproxy::host
@@ -232,31 +231,16 @@ swift_local_net_ip:
   - keystone::admin_endpoint
 # cisco specific data
 build_node_name:
-  - coe::base::build_node_name
   - collectd::graphitehost
   - graphite::graphitehost
 domain_name:
-  - coe::base::domain_name
 public_interface:
   - collectd::management_interface
 pocket:
-  - coe::base::pocket
   - coi::profiles::cobbler_server::pocket
 openstack_release:
-  - coe::base::openstack_release
+  - openstack_extras::repo::uca::release
   - coi::profiles::cobbler_server::openstack_release
-openstack_repo_location:
-  - coe::base::openstack_repo_location
-  - coi::profiles::cobbler_server::openstack_repo_location
-supplemental_repo:
-  - coe::base::supplemental_repo
-  - coi::profiles::cobbler_server::supplemental_repo
-puppet_repo:
-  - coi::profiles::openstack::base::puppet_repo
-  - coe::base::puppet_repo
-puppet_repo_location:
-  - coi::profiles::openstack::base::puppet_repo_location
-  - coe::base::puppet_repo_location
 use_syslog:
   - ceilometer::use_syslog
   - cinder::use_syslog

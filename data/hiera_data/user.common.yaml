@@ -16,11 +16,6 @@ time_zone: UTC
 # (refer to http://projects.puppetlabs.com/issues/1168).
 build_node_name: build-server
 
-# Change the following to the host name you have given to your control
-# node.  This name should be in all lower case letters due to a Puppet
-# limitation (refer to http://projects.puppetlabs.com/issues/1168).
-coe::base::controller_hostname: control-server
-
 # This domain name will be the name your build and compute nodes use for the
 # local DNS.  It doesn't have to be the name of your corporate DNS - a local
 # DNS server on the build node will serve addresses in this domain - but if
@@ -450,15 +445,3 @@ mysql::server::restart: true
 # nova user.
 # nova::nova_user_id: '499'
 # nova::nova_group_id: '499'
-
-# migration_support: enable NFS mount handling.
-# nfs_mount_path:  the path where nova instances are stored.
-# nfs_mount_device: the full path to your NFS resource.
-# nfs_fs_type: the mount type.
-# nfs_mount_options: options, as they would appear in fstab
-# Example config:
-#  coe::compute::migration::migration_support: true
-#  coe::compute::migration::nfs_mount_path: '/var/lib/nova/instances'
-#  coe::compute::migration::nfs_mount_device: 'nfs.domain.com:/myinstances'
-#  coe::compute::migration::nfs_fs_type: 'nfs'
-#  coe::compute::migration::nfs_mount_options: 'auto'

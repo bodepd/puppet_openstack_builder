@@ -121,11 +121,6 @@ nova::compute::force_config_drive: true
 # in data/hiera_data/vendor/* files if using a specific vendor's
 # repositories.
 
-# The package repository to be used. Valid values include 'cloud_archive'
-# (use the Ubuntu Cloud Archive) and 'cisco_repo' (use the Cisco Systems
-# OpenStack repository).
-coe::base::package_repo: cloud_archive
-
 # The base version of OpenStack to be installed (e.g. 'havana').
 openstack_release: icehouse
 
