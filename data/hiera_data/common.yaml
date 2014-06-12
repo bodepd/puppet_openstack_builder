@@ -32,8 +32,8 @@ rpc_user: openstack_rabbit_user
 # and/or 'debug' in their config files in order to increase
 # logging verbosity.  Set these to 'true' to set the corresponding
 # values in OpenStack services.
-verbose: false
-debug: false
+verbose: true
+debug: true
 
 # The scheduler driver to be used for Cinder.
 cinder::scheduler::scheduler_driver: 'cinder.scheduler.simple.SimpleScheduler'
