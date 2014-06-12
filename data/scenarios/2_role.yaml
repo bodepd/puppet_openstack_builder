@@ -4,7 +4,7 @@
 roles:
   cache:
     classes:
-      - coi::profiles::cache_server
+      - acng::server
   build:
     classes:
       - openstack_extras::repo

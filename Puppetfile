@@ -116,6 +116,9 @@ mod 'saz/ssh',
 mod 'duritong/sysctl',
   :git => "#{base_url}/duritong/puppet-sysctl",
   :ref => 'master'
+mod 'jtopjian/acng',
+  :git => "#{base_url}/jtopjian/puppet-acng",
+  :ref => 'master'
 
 # load a Puppetfile that can override things
 localdir = File.expand_path(File.join(File.dirname(__FILE__)))
