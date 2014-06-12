@@ -92,7 +92,8 @@ end
   'mongodb',
   'mysql',
   'rabbitmq',
-  'apache'
+  'apache',
+  'concat'
 ].each do |module_name|
   begin
     ref = eval("#{module_name}_branch")
