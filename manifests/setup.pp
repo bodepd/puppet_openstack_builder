@@ -51,8 +51,10 @@ if $::build_server_ip {
   host { "build-server.${::build_server_domain_name}":
     ip           => $::build_server_ip,
   }
-  host { "${::hostname}.${::build_server_domain_name}":
-    ip           => "${::ipaddress_eth1}",
+  if $::hostname != 'build-server' {
+    host { "${::hostname}.${::build_server_domain_name}":
+      ip           => "${::ipaddress_eth1}",
+    }
   }
 }
 
