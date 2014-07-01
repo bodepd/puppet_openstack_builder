@@ -22,7 +22,7 @@
   - "scenario/%{scenario}"
   - common
 :yaml:
-   :datadir: /etc/puppet/hieradata/hiera_data
+   :datadir: /etc/puppet/data/hiera_data
 :data_mapper:
    # this should be contained in a module
    :datadir: /etc/puppet/data/data_mappings
