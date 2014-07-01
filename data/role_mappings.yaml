@@ -28,3 +28,5 @@ swift-storage03: swift_storage
 build.+: build
 compute.+: compute
 control.+: control
+
+heatclient: heatclient

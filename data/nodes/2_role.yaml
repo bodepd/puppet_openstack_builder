@@ -104,3 +104,8 @@ nodes:
       - 'puppet-agent'
       - 'WAIT_control control-server'
       - 'puppet-agent'
+  heatclient:
+    image:        'precise-x86_64'
+    memory:       500
+    ip_number:    25
+    vagrant_name: heatclient

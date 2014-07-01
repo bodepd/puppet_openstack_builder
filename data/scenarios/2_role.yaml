@@ -34,6 +34,12 @@ roles:
       - nova_compute
       - cinder_volume
       - ceilometer_compute
+  heatclient:
+    classes:
+      - openstack_extras::client
+      - openstack_extras::auth_file
+      - openstack_extras::repo
+      - heat::client
   swift_proxy:
     classes:
       - openstack_extras::repo
