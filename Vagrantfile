@@ -16,7 +16,7 @@ end
 # 3 - COE openstack external (public)
 
 def parse_vagrant_config(
-  config_file=File.join(localdir, 'data', 'config.yaml')
+  config_file=File.join(localdir, 'hiera', 'data', 'config.yaml')
 )
   config = {
     'gui_mode'        => false,
@@ -43,7 +43,7 @@ def process_nodes(config)
   v_config = parse_vagrant_config
 
   node_group      = v_config['scenario']
-  node_group_file = File.expand_path(File.join(File.dirname(__FILE__), 'data', 'nodes', "#{node_group}.yaml"))
+  node_group_file = File.expand_path(File.join(File.dirname(__FILE__), 'hiera', 'data', 'nodes', "#{node_group}.yaml"))
 
   abort('node_group much be specific in config') unless node_group
   abort('file must exist for node group') unless File.exists?(node_group_file)
@@ -143,7 +143,7 @@ def apply_manifest(config, v_config, manifest_name='site.pp', certname=nil, pupp
 
   # ensure that when puppet applies the site manifest, it has hiera configured
   if manifest_name == 'site.pp'
-    config.vm.synced_folder("data/", '/etc/puppet/data')
+    config.vm.synced_folder("hiera/data/", '/etc/puppet/hieradata')
   end
 
   # Explicitly mount the shared folders, so we dont break with newer versions of vagrant
@@ -152,10 +152,11 @@ def apply_manifest(config, v_config, manifest_name='site.pp', certname=nil, pupp
 
   config.vm.provision :shell do |shell|
     script =
+      # this is not working correctly on reboot
       "if grep 127.0.1.1 /etc/hosts ; then \n" +
       " sed -i -e \"s/127.0.1.1.*/127.0.1.1 $(hostname).#{v_config['domain']} $(hostname)/\" /etc/hosts\n" +
       "else\n" +
-      "  echo '127.0.1.1 $(hostname).#{v_config['domain']} $(hostname)' >> /etc/hosts\n" +
+      "  echo \"127.0.1.1 $(hostname).#{v_config['domain']} $(hostname)\" >> /etc/hosts\n" +
       "fi ;"
     shell.inline = script
   end
