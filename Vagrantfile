@@ -143,7 +143,7 @@ def apply_manifest(config, v_config, manifest_name='site.pp', certname=nil, pupp
 
   # ensure that when puppet applies the site manifest, it has hiera configured
   if manifest_name == 'site.pp'
-    config.vm.synced_folder("hiera/data/", '/etc/puppet/hieradata')
+    config.vm.synced_folder("hiera/data/", '/etc/puppet/data')
   end
 
   # Explicitly mount the shared folders, so we dont break with newer versions of vagrant
