@@ -4,8 +4,11 @@
 # be used to perform configuration using master-less-puppet
 # (ie: puppet apply)
 #
-
 set -x
+
+if [ -z $WC_URL ]; then
+  trap "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\": \"FAILURE\", \"Reason\": \"Unexpected Failure\", \"Data\": \"Userdata script has executed unexpectedly.\", \"UniqueId\": \"instance1\"}' $WC_URL" ERR
+fi
 
 # install puppet
 apt-key adv --recv-key --keyserver pool.sks-keyservers.net 4BD6EC30
@@ -76,6 +79,15 @@ done
 
 $PRE_PUPPET_CONFIG
 
-puppet apply $TMP_PATH/manifests/site.pp --modulepath=/etc/puppet/modules $PUPPET_OPTIONS
+puppet apply --detailed-exitcodes $TMP_PATH/manifests/site.pp --modulepath=/etc/puppet/modules $PUPPET_OPTIONS --config_version="heat_puppet_run"
+PUPPET_RET=$?
 
 $POST_PUPPET_CONFIG
+
+if [ -z $WC_URL ]; then
+  if [ $PUPPET_RET = 4 ]; then
+  curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "FAILURE", "Reason": "Unexpected Failure", "Data": "Userdata script has executed unexpectedly.", "UniqueId": "instance1"}'
+  else
+    curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "FAILURE", "Reason": "Puppet Failed to Apply", "Data": "Userdata script has executed unexpectedly.", "UniqueId": "instance1"}' $WC_URL
+  fi
+fi

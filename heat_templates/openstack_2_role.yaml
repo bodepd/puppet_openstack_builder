@@ -36,10 +36,15 @@ resources:
             $PUPPET_REPO: { get_param: puppet_repo }
             # set the role and scenerio
             $FACTS: 'role=controller;scenario=2_role'
-            # this is a magic variable
-            $PRE_PUPPET_CONFIG: |
-              git clone https://github.com/bodepd/scenario_node_terminus ~/scenario_node_terminus
-              export RUBYLIB=$RUBYLIB:~/scenario_node_terminus/lib
+            # set up commands to run before puppet apply
+            $PRE_PUPPET_CONFIG:
+              str_replace:
+                template: |
+                  git clone https://github.com/bodepd/scenario_node_terminus ~/scenario_node_terminus
+                  export RUBYLIB=$RUBYLIB:~/scenario_node_terminus/lib
+                  $PRE_PUPPET_COMMANDS
+                params:
+                  $PRE_PUPPET_COMMANDS: { get_param: pre_puppet_commands }
             $PUPPET_OPTIONS: ' --node_terminus scenario'
             $HIERA_DATA_DIR: /etc/puppet/data
             $HIERA_USER_DATA_DIR: hiera_data
