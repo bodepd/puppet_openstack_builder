@@ -9,6 +9,9 @@ def stack_complete?(name)
   unless result.size == 1
     raise("Expected one result from stack-list for #{name}, found: #{result.size}")
   end
+  if result.first.split(/\s*\|\s*/)[3] == 'CREATE_FAILED'
+    raise(Exception, "Create failed :(")
+  end
   result.first.split(/\s*\|\s*/)[3] == 'CREATE_COMPLETE'
 end
 
