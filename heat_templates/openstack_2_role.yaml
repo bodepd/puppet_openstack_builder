@@ -21,6 +21,7 @@ parameters:
     default: ''
 
 resources:
+
   openstack_controller:
     type: OS::Nova::Server
     properties:

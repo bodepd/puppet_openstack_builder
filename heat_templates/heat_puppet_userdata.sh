@@ -6,7 +6,7 @@
 #
 set -x
 
-if [ -z $WC_URL ]; then
+if [ -n $WC_URL ]; then
   trap "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\": \"FAILURE\", \"Reason\": \"Unexpected Failure\", \"Data\": \"Userdata script has executed unexpectedly.\", \"UniqueId\": \"instance1\"}' $WC_URL" ERR
 fi
 
@@ -79,12 +79,12 @@ done
 
 $PRE_PUPPET_CONFIG
 
-puppet apply --detailed-exitcodes $TMP_PATH/manifests/site.pp --modulepath=/etc/puppet/modules $PUPPET_OPTIONS --config_version="heat_puppet_run"
+puppet apply --detailed-exitcodes $TMP_PATH/manifests/site.pp --modulepath=/etc/puppet/modules $PUPPET_OPTIONS --config_version="echo heat_puppet_run"
 PUPPET_RET=$?
 
 $POST_PUPPET_CONFIG
 
-if [ -z $WC_URL ]; then
+if [ -n $WC_URL ]; then
   if [ $PUPPET_RET = 4 ]; then
   curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "FAILURE", "Reason": "Unexpected Failure", "Data": "Userdata script has executed unexpectedly.", "UniqueId": "instance1"}'
   else
