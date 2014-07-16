@@ -19,6 +19,8 @@ def remote_script
   File.join(File.dirname(__FILE__), 'is_puppet_finished.rb')
 end
 
+controller_ip=nil
+
 Timeout::timeout(600) do
 
   # sleep until stack is in a ready state
@@ -29,6 +31,7 @@ Timeout::timeout(600) do
   # get all ip addresses and run a remote command to see if Puppet is ready
   `heat stack-show #{name} | grep output_value`.split(/\n/).each do |l|
     if l =~ /output_value\":\s*\"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/
+      controller_ip ||= $1
       puts "Checking to see when Puppet is finished on node: #{$1}"
       out = `ssh root@#{$1} -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no ruby < #{remote_script}`
       puts out
@@ -36,3 +39,6 @@ Timeout::timeout(600) do
   end
 
 end
+
+out = `ssh root@#{controller_ip} -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no "bash /tmp/test_nova.sh"`
+puts out
