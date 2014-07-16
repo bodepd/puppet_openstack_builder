@@ -1,8 +1,33 @@
 #!/usr/bin/env ruby
-for i in `heat stack-show puppet_integration_2014-07-15_14-29-57 | grep output_value`; do
-  if [[ $i =~ [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3} ]]; then
-    ip=`echo $i | awk -F'"' '{print $2}'`
-    echo $ip
-    ssh root@$ip -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no "ruby -e \"require 'yaml';exit 1 if YAML.load_file('/var/lib/puppet/state/last_run_summary.yaml')['events']['failure'] != 0\""
-  fi
-done
+
+require 'timeout'
+
+name=ARGV[0] || raise(Exception, 'stack name must be passed as an argument')
+
+def stack_complete?(name)
+  result = `heat stack-list | grep #{name}`.split(/\n/)
+  unless result.size == 1
+    raise("Expected one result from stack-list for #{name}, found: #{result.size}")
+  end
+  result.first.split(/\s*\|\s*/)[3] == 'CREATE_COMPLETE'
+end
+
+def remote_script
+  File.join(File.dirname(__FILE__), 'is_puppet_finished.rb')
+end
+
+Timeout::timeout(600) do
+
+  # sleep until stack is in a ready state
+  while( ! stack_complete?(name)) do
+    sleep 5
+  end
+
+  # get all ip addresses and run a remote command to see if Puppet is ready
+  `heat stack-show #{name} | grep output_value`.split(/\n/).each do |l|
+    if l =~ /output_value\":\s*\"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/
+      `ssh root@#{$1} -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no ruby < #{remote_script}`
+    end
+  end
+
+end
