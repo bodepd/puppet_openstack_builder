@@ -12,19 +12,23 @@ require 'yaml'
 status = Timeout::timeout(900) do
   run_summary_file = '/var/lib/puppet/state/last_run_summary.yaml'
   # first wait until a Pupet run has completed
+  puts "Waiting for a run summary"
   while(! File.exists?(run_summary_file)) do
     sleep 5
   end
+  puts "Found a run summary"
   # fail if the latest Puppet run has failures
   run_yaml = YAML.load_file(run_summary_file)
   #
   # we will set config version to 0 so that we can make sure it is the correct run
   #
+  puts 'Waiting until run summary is correct'
   while(run_yaml['version']['config'] != 'heat_puppet_run') do
     raise(Exception, 'Last Puppet run has failures') if run_yaml['events']['failure'] != 0
     sleep 5
     run_yaml = YAML.load_file(run_summary_file)
   end
   raise(Exception, 'Last Puppet run has failures') if run_yaml['events']['failure'] != 0
+  puts 'Success'
 
 end

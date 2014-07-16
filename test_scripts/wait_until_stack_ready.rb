@@ -26,7 +26,9 @@ Timeout::timeout(600) do
   # get all ip addresses and run a remote command to see if Puppet is ready
   `heat stack-show #{name} | grep output_value`.split(/\n/).each do |l|
     if l =~ /output_value\":\s*\"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/
-      `ssh root@#{$1} -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no ruby < #{remote_script}`
+      puts "Checking to see when Puppet is finished on node: #{$1}"
+      out = `ssh root@#{$1} -i /home/jenkins-slave/.ssh/id_rsa -o StrictHostKeyChecking=no ruby < #{remote_script}`
+      puts out
     end
   end
 
